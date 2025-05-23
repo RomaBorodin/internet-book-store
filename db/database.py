@@ -6,7 +6,7 @@ from db.models import Base
 from config import settings
 
 engine = create_engine(url=settings.DATABASE_URL)
-session_local = scoped_session(session_factory=sessionmaker(autocommit=False))
+session_local = scoped_session(session_factory=sessionmaker(autocommit=False, bind=engine))
 
 
 def init_db():

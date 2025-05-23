@@ -3,16 +3,28 @@
 {% block title %}Register{% endblock %}
 
 {% block content %}
-<h2 class="text-center mb-4">Register</h2>
+<h2 class="text-center mb-4">Регистрация</h2>
 <form method="POST">
     {{ form.hidden_tag() }}
-    <div class="mb-3">{{ form.username.label(class="form-label") }} {{ form.username(class="form-control") }}</div>
-    <div class="mb-3">{{ form.email.label(class="form-label") }} {{ form.email(class="form-control") }}</div>
-    <div class="mb-3">{{ form.password.label(class="form-label") }} {{ form.password(class="form-control") }}</div>
-    <div class="mb-3">{{ form.confirm_password.label(class="form-label") }} {{ form.confirm_password(class="form-control") }}</div>
-    <button type="submit" class="btn btn-primary w-100">Register</button>
+    <div class="mb-3">
+        {{ form.username.label(class="form-label") }}
+        {{ form.username(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.confirm_password.label(class="form-label") }}
+        {{ form.confirm_password(class="form-control") }}
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
 </form>
-<p class="text-center">
-    Already have an account? <a href="{{ url_for('main.login') }}">Login</a>
+<p class="text-center mt-3">
+    Уже есть аккаунт? <a href="{{ url_for('main.login') }}">Войти</a>
 </p>
 {% endblock %}
