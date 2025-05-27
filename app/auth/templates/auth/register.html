@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'auth/auth_base.html' %}
 
 {% block title %}Register{% endblock %}
 
@@ -25,6 +25,6 @@
     <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
 </form>
 <p class="text-center mt-3">
-    Уже есть аккаунт? <a href="{{ url_for('main.login') }}">Войти</a>
+    Уже есть аккаунт? <a href="{{ url_for('auth.login') }}">Войти</a>
 </p>
 {% endblock %}

@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from contextlib import contextmanager
 
-from db.models import Base
+from app.auth.models import Base
 from config import settings
 
 engine = create_engine(url=settings.DATABASE_URL)
