@@ -1,17 +1,11 @@
 from flask import flash, redirect, url_for, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, logout_user, login_required, current_user
+from flask_login import login_user, logout_user
 
-from app.database import session_scope
+from app.extensions import db
 from . import models
 from . import forms
 from . import auth_bp
-
-
-@auth_bp.route('/')
-@login_required
-def home():
-    return render_template('index.html', name=current_user.username) <- ошибка
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -19,20 +13,20 @@ def register():
     form = forms.RegistrationForm()
 
     if form.validate_on_submit():
-        with session_scope() as session:
-            user = session.query(models.User).filter_by(email=form.email.data).first()
-        if user:
-            flash('User with this email already exists', 'danger')
-            return redirect(url_for('auth.register', form=form))
+        existing_user = models.User.query.filter_by(email=form.email.data).first()
+        if existing_user:
+            flash('Пользователь с такой почтой уже существует', 'danger')
+            return redirect(url_for('auth.register'))
 
-        user = models.User(
+        new_user = models.User(
             username=form.username.data,
             email=form.email.data,
             password_hash=generate_password_hash(form.password.data)
         )
 
-        with session_scope() as session:
-            session.add(user)
+        db.session.add(new_user)
+        db.session.commit()
+
         return redirect(url_for('auth.login'))
 
     elif form.errors:
@@ -46,13 +40,12 @@ def login():
     form = forms.LoginForm()
 
     if form.validate_on_submit():
-        with session_scope() as session:
-            user = session.query(models.User).filter_by(email=form.email.data).first()
-            if user and check_password_hash(user.password_hash, form.password.data):
-                login_user(user)
-                return redirect(url_for('auth.home'))
+        user = models.User.query.filter_by(email=form.email.data).first()
+        if user and check_password_hash(user.password_hash, form.password.data):
+            login_user(user)
+            return redirect(url_for('auth.home'))
 
-        flash('Login failed', category='danger')
+        flash('Не удалось войти', category='danger')
 
     return render_template('auth/login.html', form=form)
 

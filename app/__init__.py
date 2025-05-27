@@ -1,31 +1,26 @@
 from flask import Flask
-from flask_login import LoginManager
 
-from .auth import models
 from config import settings
-from .database import init_db
-from .database import session_scope
-
-from .auth import auth_bp
+from .extensions import db, login_manager
+from .auth import models, auth_bp
 
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = settings.SECRET_KEY
+    app.config['SQLALCHEMY_DATABASE_URI'] = settings.DATABASE_URL
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    init_db()
-
-    login_manager = LoginManager(app)
+    db.init_app(app)
+    login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
 
     @login_manager.user_loader
     def load_user(user_id):
-        with session_scope() as session:
-            user = session.query(models.User).get(user_id)
-            if user:
-                session.expunge(user)
+        return models.User.query.get(user_id)
 
-            return user
+    with app.app_context():
+        db.create_all()
 
     app.register_blueprint(auth_bp)
 
