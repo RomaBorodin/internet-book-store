@@ -13,14 +13,21 @@ def register():
     form = forms.RegistrationForm()
 
     if form.validate_on_submit():
-        existing_user = models.User.query.filter_by(email=form.email.data).first()
-        if existing_user:
-            flash('Пользователь с такой почтой уже существует', 'danger')
-            return redirect(url_for('auth.register'))
+        existing_email = models.User.query.filter_by(email=form.email.data).first()
+        existing_number = models.User.query.filter_by(number=form.number.data).first()
+
+        if existing_email:
+            form.email.errors.append('Пользователь с такой почтой уже существует')
+            return render_template('auth/register.html', form=form)
+        if existing_number:
+            form.number.errors.append('Пользователь с таким номером уже существует')
+            return render_template('auth/register.html', form=form)
 
         new_user = models.User(
-            username=form.username.data,
+            name=form.name.data,
+            last_name=form.last_name.data,
             email=form.email.data,
+            number=form.number.data,
             password_hash=generate_password_hash(form.password.data)
         )
 
@@ -28,9 +35,6 @@ def register():
         db.session.commit()
 
         return redirect(url_for('auth.login'))
-
-    elif form.errors:
-        flash(form.errors, 'danger')
 
     return render_template('auth/register.html', form=form)
 
@@ -44,8 +48,9 @@ def login():
         if user and check_password_hash(user.password_hash, form.password.data):
             login_user(user)
             return redirect(url_for('auth.home'))
-
-        flash('Не удалось войти', category='danger')
+        else:
+            form.password.errors.append('Неверный пароль')
+            return render_template('auth/login.html', form=form)
 
     return render_template('auth/login.html', form=form)
 
@@ -54,3 +59,9 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('auth.login'))
+
+
+@auth_bp.route('/')
+@auth_bp.route('/index')
+def home():
+    return render_template('index.html')
