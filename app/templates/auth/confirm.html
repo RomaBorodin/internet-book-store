@@ -1,0 +1,18 @@
+{% extends 'auth/base_auth.html' %}
+
+{% block title %}Подтверждение{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Подтверждение</h2>
+<form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.code.label(class="form-label") }}
+        {{ form.code(class="form-control") }}
+        {% for error in form.code.errors %}
+            <div class="text-danger form-text">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Подтвердить</button>
+</form>
+{% endblock %}

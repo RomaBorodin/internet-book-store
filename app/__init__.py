@@ -2,7 +2,9 @@ from flask import Flask
 
 from config import settings
 from .extensions import db, login_manager, migrate
+
 from .auth import models, auth_bp
+from .main import main_bp
 
 
 def create_app():
@@ -24,5 +26,6 @@ def create_app():
         db.create_all()
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(main_bp)
 
     return app

@@ -32,3 +32,9 @@ class LoginForm(FlaskForm):
     password = PasswordField(label='Пароль', validators=[
         DataRequired('Введите пароль'), Length(min=8, max=36, message='Пароль должен быль от 8 до 36 символов')
     ])
+
+
+class ConfirmForm(FlaskForm):
+    code = PasswordField(label='Код для входа: 1234', validators=[
+        DataRequired('Введите код'), Length(max=4)
+    ])
