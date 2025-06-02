@@ -87,7 +87,7 @@ def confirm():
             session.pop('pending_action')
             session.pop('confirmation_code')
 
-            return redirect(url_for('auth.home'))
+            return redirect(url_for('main.home'))
 
         else:
             form.code.errors.append('Неверный код')
