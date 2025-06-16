@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user
 
 from app.extensions import db
-from . import models
+from .. import models
 from . import forms
 from . import auth_bp
 
@@ -56,7 +56,7 @@ def login():
 @auth_bp.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('main.home'))
 
 
 @auth_bp.route('/confirm', methods=['GET', 'POST'])
