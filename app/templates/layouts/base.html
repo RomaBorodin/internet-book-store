@@ -14,10 +14,10 @@
     <nav class="container">
         <a class="navbar-brand" href="{{ url_for('main.home') }}">Магазин книг</a>
 
-        <form class="d-flex mx-auto" method="GET" action="{{ url_for('main.home') }}">
-            <input class="form-control me-2" type="search" name="q" placeholder="Поиск книг" aria-label="Search">
-            <button class="btn btn-outline-secondary" type="submit">Найти</button>
-        </form>
+        <div class="position-relative w-100" style="max-width: 600px;">
+            <input type="search" id="search" class="form-control me-2" placeholder="Поиск книг" autocomplete="off">
+            <div id="results" class="list-group position-absolute w-100"></div>
+        </div>
 
         <ul class="navbar-nav">
             {% if current_user.is_authenticated %}
@@ -45,5 +45,7 @@
 <main>
     {% block content %}{% endblock %}
 </main>
+
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
 </body>
 </html>
