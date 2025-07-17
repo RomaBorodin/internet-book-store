@@ -26,8 +26,6 @@ class Book(db.Model):
     cover = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=False)
     year = db.Column(db.Integer, nullable=False)
-    avg_rating = db.Column(db.Float, nullable=False, default=0.0)
-    reviews_count = db.Column(db.Integer, nullable=False, default=0)
 
     reviews = db.relationship('Review', back_populates='book', cascade='all, delete-orphan')
 

@@ -1,5 +1,4 @@
 from flask import render_template, redirect, url_for, request, jsonify
-from flask_login import current_user
 
 from . import main_bp
 from .. import models
@@ -7,10 +6,7 @@ from .. import models
 
 @main_bp.route('/')
 def home():
-    if current_user.is_authenticated:
-        return render_template('main/home.html')
-    else:
-        return render_template('main/index.html')
+    return render_template('main/index.html')
 
 
 @main_bp.route('/search')
