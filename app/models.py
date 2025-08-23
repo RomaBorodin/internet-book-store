@@ -1,5 +1,8 @@
 from flask_login import UserMixin
+
 from app.extensions import db
+from sqlalchemy import func, select
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class User(db.Model, UserMixin):
@@ -28,6 +31,15 @@ class Book(db.Model):
     year = db.Column(db.Integer, nullable=False)
 
     reviews = db.relationship('Review', back_populates='book', cascade='all, delete-orphan')
+
+    @hybrid_property
+    def avg_rating(self):
+        avg = db.session.query(func.avg(Review.rating)).filter(Review.book_id == self.id).scalar()
+        return round(avg, 1) if avg else 0
+
+    @avg_rating.expression
+    def avg_rating(cls):
+        return select(func.avg(Review.rating)).where(Review.book_id == cls.id)
 
 
 class Review(db.Model):

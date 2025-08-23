@@ -3,7 +3,8 @@ from flask import Flask
 from config import settings
 from .extensions import db, login_manager, migrate
 
-from .auth import models, auth_bp
+from . import models
+from .auth import auth_bp
 from .main import main_bp
 
 
