@@ -1,1 +1,40 @@
-<h1>ты не зареган</h1>
+{% extends 'layouts/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="bg-light text-black text-center py-5 mb-5">
+    <h1 class="display-4">Добро пожаловать в книжный магазин</h1>
+    <p class="lead">Откройте для себя лучшие книги прямо сейчас</p>
+    <a href="{{ url_for('main.home') }}" class="btn btn-primary btn-lg mt-3">Перейти в каталог</a>
+</div>
+
+<!-- Популярные книги -->
+<div class="container">
+    <h2 class="mb-4">Популярные книги</h2>
+    <div class="row">
+        {% for book in top_books %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="position-relative">
+                    <img src="{{ url_for('static', filename='images/cover_sample.webp') }}"
+                         alt="Обложка книги" class="img-fluid rounded shadow-sm">
+                    <div class="position-absolute top-0 end-0 bg-primary text-white px-2 py-1 rounded-start">
+                        ★ {{ book.avg_rating }}
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    <p class="card-text text-muted">{{ book.author }}</p>
+                    <a href="{{ url_for('main.book_info', book_id=book.id) }}" class="btn btn-primary btn-sm">
+                        Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
