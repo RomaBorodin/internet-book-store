@@ -9,7 +9,8 @@ from . import forms
 
 @main_bp.route('/')
 def home():
-    return render_template('main/index.html')
+    top_books = models.Book.query.order_by(models.Book.avg_rating.desc()).limit(3).all()
+    return render_template('main/index.html', top_books=top_books)
 
 
 @main_bp.route('/search')
