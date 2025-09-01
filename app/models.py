@@ -39,7 +39,12 @@ class Book(db.Model):
 
     @avg_rating.expression
     def avg_rating(cls):
-        return select(func.avg(Review.rating)).where(Review.book_id == cls.id)
+        return (
+            select(func.coalesce(func.avg(Review.rating), 0))
+            .where(Review.book_id == cls.id)
+            .correlate_except(Review)
+            .scalar_subquery()
+        )
 
 
 class Review(db.Model):

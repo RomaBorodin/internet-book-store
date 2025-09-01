@@ -58,3 +58,32 @@ def delete_review(review_id):
     db.session.delete(review)
     db.session.commit()
     return redirect(url_for('main.book_info', book_id=review.book_id))
+
+
+@main_bp.route('/catalog')
+def catalog():
+    page = request.args.get('page', 1, type=int)
+    sort = request.args.get('sort', 'default', type=str)
+    genre = request.args.get('genre', 'all', type=str)
+
+    query = models.Book.query
+
+    genres = [g[0] for g in db.session.query(models.Book.genre).distinct().all()]
+    if genre != 'all':
+        query = query.filter(models.Book.genre == genre)
+
+    match sort:
+        case 'rating_desc':
+            query = query.order_by(models.Book.avg_rating.desc())
+        case 'rating_asc':
+            query = query.order_by(models.Book.avg_rating.asc())
+        case 'price_desc':
+            query = query.order_by(models.Book.price.desc())
+        case 'price_asc':
+            query = query.order_by(models.Book.price.asc())
+        case _:
+            query = query.order_by(models.Book.id)
+
+    books = query.paginate(page=page, per_page=3, error_out=False)
+
+    return render_template('main/catalog.html', books=books, sort=sort, genre=genre, genres=genres)
