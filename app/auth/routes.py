@@ -1,6 +1,6 @@
 from flask import redirect, url_for, render_template, session, abort
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, login_required
 
 from app.extensions import db
 from .. import models
@@ -54,6 +54,7 @@ def login():
 
 
 @auth_bp.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('main.home'))

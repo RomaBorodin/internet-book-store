@@ -1,5 +1,5 @@
 from flask import render_template, redirect, url_for, request, jsonify
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 from app.extensions import db
 from . import main_bp
@@ -53,6 +53,7 @@ def book_info(book_id):
 
 
 @main_bp.route('/delete_review/<int:review_id>', methods=['POST'])
+@login_required
 def delete_review(review_id):
     review = models.Review.query.get_or_404(review_id)
     db.session.delete(review)
