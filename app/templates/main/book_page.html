@@ -2,7 +2,7 @@
 
 {% block title %}{{ book.title }}{% endblock %}
 {% block css %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/book_page.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/book_page.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -28,12 +28,39 @@
             <h5>Описание</h5>
             <p>{{ book.description }}</p>
 
-            <div class="bg-light border p-4 rounded mb-4">
-                <h4 class="text-primary fw-bold">{{ book.price }}₽</h4>
+            <div class="bg-light border p-4 rounded mb-4" id="book">
+                <h4 class="text-primary fw-bold">
+                    {{ "{:.2f}".format((item.quantity if item else 1) * book.price) }} ₽
+                </h4>
 
                 {% if current_user.is_authenticated %}
                 <div class="d-flex gap-2 mt-3">
-                    <button class="btn btn-primary btn-sm">Добавить в корзину</button>
+                    {% if not item %}
+                    <form method="POST" action="{{ url_for('order.cart_update', book_id=book.id) }}" class="cart-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="next_url" value="{{ request.path }}#book">
+                        <button class="btn btn-primary btn-sm">В корзину</button>
+                    </form>
+                    {% else %}
+                    <div class="d-flex align-items-center">
+                        <form method="POST" action="{{ url_for('order.cart_update', book_id=book.id) }}" class="cart-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="next_url" value="{{ request.path }}#book">
+                            <input type="hidden" name="action" value="dec">
+                            <button class="btn btn-outline-secondary btn-sm">-</button>
+                        </form>
+
+                        <span id="quantity-{{ book.id }}" class="mx-2">{{ item.quantity }}</span>
+
+                        <form method="POST" action="{{ url_for('order.cart_update', book_id=book.id) }}" class="cart-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="next_url" value="{{ request.path }}#book">
+                            <input type="hidden" name="action" value="inc">
+                            <button class="btn btn-outline-secondary btn-sm">+</button>
+                        </form>
+                    </div>
+                    <span class="fw-bold">в корзине</span>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>
@@ -49,21 +76,22 @@
                     <div class="mb-3">
                         <div class="star-rating">
                             {% for value, label in form.rating.choices %}
-                                <input type="radio" id="star{{ value }}" name="{{ form.rating.name }}" value="{{ value }}" class="d-none">
-                                <label for="star{{ value }}">
-                                    ★
-                                </label>
+                            <input type="radio" id="star{{ value }}" name="{{ form.rating.name }}" value="{{ value }}"
+                                   class="d-none">
+                            <label for="star{{ value }}">
+                                ★
+                            </label>
                             {% endfor %}
                         </div>
                         {% for error in form.rating.errors %}
-                            <div class="text-danger">{{ error }}</div>
+                        <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="mb-3">
                         {{ form.comment.label(class="form-label") }}
                         {{ form.comment(class="form-control", rows=3) }}
                         {% for error in form.comment.errors %}
-                            <div class="text-danger">{{ error }}</div>
+                        <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <button type="submit" class="btn btn-success btn-sm">Отправить отзыв</button>
@@ -73,33 +101,34 @@
 
             <h4 class="mb-3">Отзывы</h4>
             {% if book.reviews %}
-                {% for review in book.reviews %}
-                <div class="border rounded p-3 mb-3">
+            {% for review in book.reviews %}
+            <div class="border rounded p-3 mb-3">
 
-                    <p class="fw-bold mb-1">{{ review.user.name }}</p>
+                <p class="fw-bold mb-1">{{ review.user.name }}</p>
 
-                    <div class="star-rating mb-2">
-                        {% for i in range(5, 0, -1) %}
-                            {% if i <= review.rating %}
-                                <span style="color: #ffd700;">★</span>
-                            {% else %}
-                                <span style="color: #dddddd;">★</span>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-
-                    <p class="mb-0">{{ review.comment }}</p>
-
-                    {% if current_user.is_authenticated and current_user.id == review.user_id %}
-                        <form action="{{ url_for('main.delete_review', review_id=review.id) }}" method="post" class="mt-2 text-end">
-                            <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
-                        </form>
+                <div class="star-rating mb-2">
+                    {% for i in range(5, 0, -1) %}
+                    {% if i <= review.rating %}
+                    <span style="color: #ffd700;">★</span>
+                    {% else %}
+                    <span style="color: #dddddd;">★</span>
                     {% endif %}
+                    {% endfor %}
                 </div>
-                {% endfor %}
+
+                <p class="mb-0">{{ review.comment }}</p>
+
+                {% if current_user.is_authenticated and current_user.id == review.user_id %}
+                <form action="{{ url_for('main.delete_review', review_id=review.id) }}" method="post" class="mt-2 text-end">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
 
             {% else %}
-                <p>Отзывов пока нет</p>
+            <p>Отзывов пока нет</p>
             {% endif %}
         </div>
     </div>

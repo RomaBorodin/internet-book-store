@@ -16,6 +16,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(256), nullable=False)
 
     reviews = db.relationship('Review', back_populates='user', cascade='all, delete-orphan')
+    cart_items = db.relationship('CartItem', back_populates='user', cascade='all, delete-orphan')
 
 
 class Book(db.Model):
@@ -24,13 +25,14 @@ class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     title = db.Column(db.String(100), nullable=False)
     author = db.Column(db.String(100), nullable=False)
-    price = db.Column(db.Float, nullable=False)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
     genre = db.Column(db.String(50), nullable=False)
     cover = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=False)
     year = db.Column(db.Integer, nullable=False)
 
     reviews = db.relationship('Review', back_populates='book', cascade='all, delete-orphan')
+    cart_items = db.relationship('CartItem', back_populates='book', cascade='all, delete-orphan')
 
     @hybrid_property
     def avg_rating(self):
@@ -58,3 +60,15 @@ class Review(db.Model):
 
     book = db.relationship('Book', back_populates='reviews')
     user = db.relationship('User', back_populates='reviews')
+
+
+class CartItem(db.Model):
+    __tablename__ = 'cart_items'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+
+    user = db.relationship('User', back_populates='cart_items')
+    book = db.relationship('Book', back_populates='cart_items')

@@ -49,7 +49,9 @@ def book_info(book_id):
 
         return redirect(url_for('main.book_info', book_id=book.id))
 
-    return render_template('main/book_page.html', book=book, form=form)
+    item = models.CartItem.query.filter_by(user_id=current_user.id, book_id=book_id).first()
+
+    return render_template('main/book_page.html', book=book, item=item, form=form)
 
 
 @main_bp.route('/delete_review/<int:review_id>', methods=['POST'])
