@@ -1,11 +1,12 @@
 from flask import Flask
 
 from config import settings
-from .extensions import db, login_manager, migrate
+from .extensions import db, login_manager, migrate, csrf
 
 from . import models
 from .auth import auth_bp
 from .main import main_bp
+from .order import order_bp
 
 
 def create_app():
@@ -15,6 +16,7 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)
+    csrf.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
@@ -28,5 +30,6 @@ def create_app():
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
+    app.register_blueprint(order_bp)
 
     return app
