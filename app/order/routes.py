@@ -7,8 +7,12 @@ from .. import models
 
 
 @order_bp.route('/cart')
+@login_required
 def cart():
-    return render_template('order/cart.html')
+    cart_items = models.CartItem.query.filter_by(user_id=current_user.id).order_by(models.CartItem.id).all()
+    total = sum((item.book.price * item.quantity) for item in cart_items)
+
+    return render_template('order/cart.html', cart_items=cart_items, total=total)
 
 
 @order_bp.route('/cart_update/<int:book_id>', methods=['POST'])
