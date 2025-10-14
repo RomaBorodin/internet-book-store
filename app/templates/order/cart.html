@@ -1,0 +1,77 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Ваша корзина</h2>
+
+    {% if cart_items %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>Книга</th>
+                <th class="text-center">Количество</th>
+                <th class="text-end">Цена</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('main.book_info', book_id=item.book.id) }}" class="text-decoration-none">
+                        {{ item.book.title }} | {{ item.book.author }}
+                    </a>
+                </td>
+
+                <td class="text-center">
+                    <div class="d-inline-flex align-items-center">
+                        <form method="POST" action="{{ url_for('order.cart_update', book_id=item.book.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="action" value="dec">
+                            <input type="hidden" name="next_url" value="{{ request.path }}">
+                            {% if item.quantity == 1 %}
+                            <button type="submit" class="btn btn-outline-secondary btn-sm"
+                                    onclick="return confirm('Вы хотите удалить этот товар из корзины?');">−</button>
+                            {% else %}
+                            <button class="btn btn-outline-secondary btn-sm">−</button>
+                            {% endif %}
+                        </form>
+
+                        <span class="mx-2 fw-semibold">{{ item.quantity }}</span>
+
+                        <form method="POST" action="{{ url_for('order.cart_update', book_id=item.book.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="action" value="inc">
+                            <input type="hidden" name="next_url" value="{{ request.path }}">
+                            <button class="btn btn-outline-secondary btn-sm">+</button>
+                        </form>
+                    </div>
+                </td>
+
+                <td class="text-end">
+                    {{ "{:.2f}".format(item.book.price * item.quantity) }} ₽
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center pt-3">
+        <h4>Итого:</h4>
+        <h4>{{ "{:.2f}".format(total) }} ₽</h4>
+    </div>
+
+    <div class="text-end mt-3">
+        <a href="{{ url_for('order.checkout') }}" class="btn btn-primary">
+            Оформить заказ
+        </a>
+    </div>
+
+    {% else %}
+    <p>Ваша корзина пуста</p>
+    {% endif %}
+</div>
+{% endblock %}
