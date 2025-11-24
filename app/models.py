@@ -17,6 +17,7 @@ class User(db.Model, UserMixin):
 
     reviews = db.relationship('Review', back_populates='user', cascade='all, delete-orphan')
     cart_items = db.relationship('CartItem', back_populates='user', cascade='all, delete-orphan')
+    orders = db.relationship('Order', back_populates='user', cascade='all, delete-orphan')
 
 
 class Book(db.Model):
@@ -72,3 +73,33 @@ class CartItem(db.Model):
 
     user = db.relationship('User', back_populates='cart_items')
     book = db.relationship('Book', back_populates='cart_items')
+
+
+class Order(db.Model):
+    __tablename__ = 'orders'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
+    status = db.Column(db.String(20), default='Принят', nullable=False)
+    number = db.Column(db.String(20), nullable=False)
+    delivery_method = db.Column(db.String(20), nullable=False)
+    address = db.Column(db.String(255), nullable=False)
+    note = db.Column(db.Text)
+    total_price = db.Column(db.Numeric(10, 2), nullable=False)
+
+    order_items = db.relationship('OrderItem', back_populates='order', cascade='all, delete-orphan')
+    user = db.relationship('User', back_populates='orders')
+
+
+class OrderItem(db.Model):
+    __tablename__ = 'order_items'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
+
+    order = db.relationship('Order', back_populates='order_items')
+    book = db.relationship('Book')

@@ -1,40 +1,46 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp
 
 
 class RegistrationForm(FlaskForm):
-    name = StringField(label='Имя', validators=[
+    name = StringField('Имя', validators=[
         DataRequired(message='Введите имя'), Length(min=2, max=100, message='Минимум 2 символа')
     ])
-    last_name = StringField(label='Фамилия', validators=[
+    last_name = StringField('Фамилия', validators=[
         DataRequired('Введите фамилию'), Length(min=2, max=100, message='Минимум 2 символа')
     ])
-    email = StringField(label='Почта', validators=[
+    email = StringField('Почта', validators=[
         DataRequired('Введите почту'), Email(message='Некорректная почта')
     ])
-    number = StringField(label='Номер телефона', validators=[
+    number = StringField('Номер телефона', validators=[
         DataRequired('Введите номер телефона'),
         Regexp(r'^\+?\d{6,16}$', message='Телефон должен состоять из цифр (минимум 6) и знака в начале')
     ])
-    password = PasswordField(label='Пароль', validators=[
+    password = PasswordField('Пароль', validators=[
         DataRequired('Введите пароль'), Length(min=8, max=36, message='Пароль должен быль от 8 до 36 символов')
     ])
-    confirm = PasswordField(label='Подтвердить пароль', validators=[
+    confirm = PasswordField('Подтвердить пароль', validators=[
         DataRequired('Введите пароль еще раз'), EqualTo(fieldname='password', message='Пароли не совпадают')
     ])
 
+    submit = SubmitField('Зарегистрироваться')
+
 
 class LoginForm(FlaskForm):
-    email = StringField(label='Почта', validators=[
+    email = StringField('Почта', validators=[
         DataRequired('Введите почту'), Email(message='Некорректная почта')
     ])
-    password = PasswordField(label='Пароль', validators=[
+    password = PasswordField('Пароль', validators=[
         DataRequired('Введите пароль'), Length(min=8, max=36, message='Пароль должен быль от 8 до 36 символов')
     ])
 
+    submit = SubmitField('Войти')
+
 
 class ConfirmForm(FlaskForm):
-    code = PasswordField(label='Код для входа: 1234', validators=[
+    code = PasswordField('Код для входа: 1234', validators=[
         DataRequired('Введите код'), Length(max=4)
     ])
+
+    submit = SubmitField('Подтвердить')

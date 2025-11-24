@@ -1,0 +1,62 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <h2 class="mb-4 text-center">Оформление заказа</h2>
+
+    <form method="POST" action="{{ url_for('order.checkout') }}" class="border rounded p-4 shadow-sm bg-light" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+            {{ form.number.label(class="form-label fw-bold") }}
+            {{ form.number(class="form-control") }}
+            {% for error in form.number.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.delivery_method.label(class="form-label fw-bold") }}
+            <div id="delivery-method" class="d-flex gap-3">
+                {% for subfield in form.delivery_method %}
+                    <div class="form-check">
+                        {{ subfield(class="form-check-input", onchange="toggleDeliveryFields()") }}
+                        {{ subfield.label(class="form-check-label") }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div id="pickup-section" class="mb-3">
+            {{ form.pickup_point.label(class="form-label fw-bold") }}
+            <div>
+                {% for subfield in form.pickup_point %}
+                    <div class="form-check">
+                        {{ subfield(class="form-check-input") }}
+                        {{ subfield.label(class="form-check-label") }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div id="delivery-section" class="mb-3 d-none">
+            {{ form.address.label(class="form-label fw-bold") }}
+            {{ form.address(class="form-control") }}
+            {% for error in form.address.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.note.label(class="form-label fw-bold") }}
+            {{ form.note(class="form-control", rows="3") }}
+        </div>
+
+        <div class="text-center mt-4">
+            {{ form.submit(class="btn btn-success px-5 py-2") }}
+        </div>
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/toggle.js') }}"></script>
+{% endblock %}
